@@ -12,7 +12,7 @@ function App() {
         <a href="#" class="right">Account</a>
       </div>
       <header className="App-header">
-        
+        /* Welcome message */
         <p>
           Welcome!
           Please Sign In or Register
