@@ -1,47 +1,26 @@
-import React, {useEffect, useState} from 'react'
-
+import logo from './Georgia_Athletics_logo.svg.png';
+import './App.css';
+//import '../server';
 function App() {
-
-
-  /*
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Please sign in
-        </p>
-        <a
-          className="App-link"
-          href=""
-//          target="_blank"
-//          rel="noopener noreferrer"
-//        >
-//          Log In
-//        </a>
-//      </header>
-//    </div>
-//  );
-//}*/
-
-
-    const [backEndData, setBackEndData] = useState([{}])
-
-    useEffect(() => {
-	fetch("/api").then( // can just do "/api" since we set proxy in package.json
-	    response => response.json()
-	).then(
-	    data => {
-		setBackEndData(data)
-	    }
-	)
-    }, [])
     
-    return (
-	<div>
+      <div className="App">
+      <div class="navbar">
+    <a href="#">Home</a>
+    <a href="#">Comments</a>
+    <a href="#">Shop</a>
+    <img src="Georgia_Athletics_logo.svg.png" className="App-logo" alt="bulldog-logo"/>
+    <a href="#" class="right">Account</a>
+    <a href="#" class="right">Cart</a>
+    <a href="#" class="right">Rewards</a>
+    
+    </div>
+    
+      
+      </div>
+      
+    
+  );
+}
 
-	</div>
-    )
-} // App
-
-export default App
+export default App;
