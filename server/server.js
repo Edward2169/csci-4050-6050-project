@@ -1,10 +1,159 @@
 const express = require('express');
+const path = require('path')
 const app = express()
 const PORT = process.env.PORT || 3000;
 
-const {getUsers, getUser, createUser, getComments, changeEmail, purchaseTicket, registerUser} = require('./database.js');
+const {getUsers, getUser, getUserByUsername, createUser, getComments, changeEmail, purchaseTicket, registerUser, verifyLogin, getCart, addCartItem, removeCartItem, getMerchandise, getAllMerchandise} = require('./database.js');
 
 app.use(express.json());
+
+// Redirect to login page
+app.get('/', (req, res) => {
+    res.redirect('/login');
+});
+
+// Login page
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/login.html'))
+});
+
+// Home page
+app.get('/home/:username', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/home.html'))
+}) 
+
+// Tickets page
+app.get('/tickets/:username', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/tickets.html'))
+}) 
+
+// Community page
+app.get('/community/:username', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/community.html'))
+}) 
+
+// Shop page
+app.get('/shop/:username', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/shop.html'))
+}) 
+
+// Cart page
+app.get('/cart/:username', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/Cart.html'))
+}) 
+
+// Account page
+app.get('/account/:username', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/account.html'))
+}) 
+
+
+// Admin commands used to return database items
+// Admin use to verify login
+app.post('/admin/verifyLogin', async (req, res) => {
+    const { username, password } = req.body;
+    try {
+        const success = await verifyLogin(username, password);
+        if (success) {
+            // If login successful, get user information
+            const user = await getUser(username);
+            res.json({ success: true, user: user });
+        } else {
+            res.json({ success: false });
+        }
+    } catch (error) {
+        console.error('Error verifying login:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
+// Admin use to get user info from username
+app.get('/admin/getUser/username/:username', async (req,res) => {
+    try {
+        const username = req.params.username;
+        const user = await getUserByUsername(username);
+        res.json(user);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Something went wrong');
+    }
+})
+
+// Admin use to get all items for username
+app.get('/admin/cart/getItems/:username', async (req, res) => {
+    try {
+        const username = req.params.username;
+        const cart = await getCart(username);
+        res.json(cart);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Something went wrong');
+    }
+});
+
+// Admin use to add item to cart
+app.get('/admin/cart/addItem/:username/:itemId/:quantity', async (req, res) => {
+    try {
+        const username = req.params.username;
+        const item_id = req.params.itemId;
+        const quantity = req.params.quantity;
+        const result = await addCartItem(username, item_id, quantity);
+        if (result) {
+            res.status(200).send('Item successfully registered');
+        } else {
+            res.status(500).send('Item registration failure');
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Something went wrong');
+    }
+});
+
+// Admin use to remove item from cart
+app.get('/admin/cart/removeItem/:cartId', async (req, res) => {
+    try {
+        const cart_id = req.params.cartId;
+        const result = await removeCartItem(cart_id);
+        if (result) {
+            res.status(200).send('Item successfully deleted');
+        } else {
+            res.status(500).send('Item failed to be deleted');
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Something went wrong');
+    }
+});
+
+// Admin use to get all items for username
+app.get('/admin/merchandise/getItems', async (req, res) => {
+    try {
+        const merchandise = await getAllMerchandise();
+        res.json(merchandise);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Something went wrong');
+    }
+});
+
+// Admin use to get all merchandise under id
+app.get('/admin/merchandise/getItem/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const merchandise = await getMerchandise(id);
+        res.json(merchandise);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Something went wrong');
+    }
+});
+
+
+
+
+
+
+
 
 // Calls the getUsers() DB method
 // returns all of the users
